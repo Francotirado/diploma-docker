@@ -36,8 +36,5 @@ jobs:
           yc config set service-account-key /tmp/yc-sa-key.json
           rm -f /tmp/yc-sa-key.json
           yc container registry configure-docker
-
-      - name: Build & Push
-        run: |
           docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
