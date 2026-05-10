@@ -31,9 +31,9 @@ jobs:
 
       - name: Auth & Configure Docker
         run: |
-          echo '${{ secrets.YC_SA_KEY }}' > /tmp/yc-sa-key.json
+          printf '%s\n' '${{ secrets.YC_SA_KEY }}' > /tmp/yc-sa-key.json
           yc config profile create ci
-          yc config set service-account-key "$(cat /tmp/yc-sa-key.json)"
+          yc config set service-account-key /tmp/yc-sa-key.json
           rm -f /tmp/yc-sa-key.json
           yc container registry configure
 
