@@ -29,9 +29,11 @@ jobs:
 
       - name: Docker Login
         run: |
-          yc iam create-token | docker login \
-            --username iam \
-            --password-stdin cr.yandex
+          echo '${{ secrets.YC_SA_KEY }}' > key.json
+          docker login \
+            --username json_key \
+            --password-stdin cr.yandex \
+            < key.json
 
       - name: Determine tag
         id: tag
