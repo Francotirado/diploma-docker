@@ -26,7 +26,7 @@ jobs:
           fi
 
       - name: Setup YC CLI
-        uses: yandex-cloud/actions/setup-yc@v1
+        uses: nightstory/setup-yc@v1
         with:
           yc-service-account-key: ${{ secrets.YC_SA_KEY }}
           yc-folder-id: ${{ env.FOLDER_ID }}
