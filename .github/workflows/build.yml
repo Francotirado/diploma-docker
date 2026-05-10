@@ -35,7 +35,7 @@ jobs:
           yc config profile create ci
           yc config set service-account-key /tmp/yc-sa-key.json
           rm -f /tmp/yc-sa-key.json
-          yc container registry configure
+          yc container registry configure-docker
 
       - name: Build & Push
         run: |
