@@ -30,14 +30,12 @@ jobs:
 
       - name: Auth, Build & Push
         run: |
-          printf '%s\n' '${{ secrets.YC_SA_KEY }}' > /tmp/key.json
-          yc config set service-account-key /tmp/key.json
-          IAM_TOKEN=$(yc iam create-token)
-          OAUTH_TOKEN=$(curl -s -X POST \
-            "https://iam.api.cloud.yandex.net/iam/v1/tokens" \
-            -H "Authorization: Bearer $IAM_TOKEN" \
-            -d '{"yandexPassportOauthToken":{}}' | jq -r '.oauthToken.token')
-          echo "$OAUTH_TOKEN" | docker login --username oauth --password-stdin cr.yandex
+          printf '%s' '${{ secrets.YC_SA_KEY }}' > /tmp/yc-key.json
+          yc config profile create ci
+          yc config set service-account-key /tmp/yc-key.json
+          yc config profile activate ci
+          TOKEN=$(yc iam create-token)
+          echo "$TOKEN" | docker login --username iam --password-stdin cr.yandex
           docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
           rm -f /tmp/yc-key.json
