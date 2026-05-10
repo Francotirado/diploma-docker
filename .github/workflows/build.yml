@@ -25,7 +25,7 @@ jobs:
           fi
 
       - name: Auth to YC
-        uses: yc-actions/yc-auth@v2
+        uses: yc-actions/yc-auth@v1
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SA_KEY }}
 
