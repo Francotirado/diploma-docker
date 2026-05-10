@@ -1,0 +1,30 @@
+---
+name: Build & Push Image
+
+'on':
+  push:
+    branches: [ main ]
+    tags: [ 'v*.*.*' ]
+
+env:
+  REGISTRY: cr.yandex/crppthgv7553krfpenjf/diploma-app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine tag
+        id: tag
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & Push
+        run: |
+          docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
+          docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
