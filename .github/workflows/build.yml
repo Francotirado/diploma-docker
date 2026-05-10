@@ -1,7 +1,6 @@
----
 name: Build & Push Image
 
-'on':
+on:
   push:
     branches: [ main ]
     tags: [ 'v*.*.*' ]
@@ -13,28 +12,40 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Determine tag
-        id: tag
+      - name: Install YC CLI
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "TAG=latest" >> $GITHUB_OUTPUT
-          fi
+          curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
 
-      - name: Setup YC CLI
-        uses: nightstory/setup-yc@v1
-        with:
-          yc-service-account-key: ${{ secrets.YC_SA_KEY }}
-          yc-folder-id: ${{ env.FOLDER_ID }}
+      - name: Configure YC
+        run: |
+          echo '${{ secrets.YC_SA_KEY }}' > key.json
+          yc config set service-account-key key.json
+          yc config set folder-id ${{ env.FOLDER_ID }}
 
-      - name: Build & Push
+      - name: Docker Login
         run: |
           yc iam create-token | docker login \
             --username iam \
             --password-stdin cr.yandex
+
+      - name: Determine tag
+        id: tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "TAG=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build
+        run: |
           docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
+
+      - name: Push
+        run: |
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
