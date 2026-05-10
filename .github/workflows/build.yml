@@ -24,7 +24,13 @@ jobs:
             echo "TAG=latest" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build & Push
+      - name: Auth to YC
+        uses: yc-actions/yc-auth@v2
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SA_KEY }}
+
+      - name: Login & Push
         run: |
+          yc container registry configure
           docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
