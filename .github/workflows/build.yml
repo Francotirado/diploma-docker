@@ -33,6 +33,8 @@ jobs:
 
       - name: Build & Push
         run: |
-          yc container registry configure-docker
+          yc iam create-token | docker login \
+            --username iam \
+            --password-stdin cr.yandex
           docker build -t ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }} .
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
