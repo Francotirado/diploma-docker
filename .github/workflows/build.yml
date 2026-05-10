@@ -7,7 +7,7 @@ name: Build & Push Image
     tags: [ 'v*.*.*' ]
 
 env:
-  REGISTRY: cr.yandex/crppthgv7553krfpenjf/diploma-app
+  REGISTRY: cr.yandex/crprb0be03l7semd3i14/diploma-app
 jobs:
   build:
     runs-on: ubuntu-latest
