@@ -34,9 +34,8 @@ jobs:
           printf '%s\n' '${{ secrets.YC_SA_KEY }}' > /tmp/yc-key.json
           yc config profile create ci
           yc config set service-account-key /tmp/yc-key.json
-          yc config profile activate ci
           TOKEN=$(yc iam create-token)
-          docker login -u iam -p "$TOKEN" cr.yandex
+          echo "$TOKEN" | docker login --username oauth --password-stdin cr.yandex
           rm -f /tmp/yc-key.json
 
       - name: Build & Push
