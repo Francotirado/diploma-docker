@@ -58,6 +58,7 @@ jobs:
               "event_type": "image-pushed",
               "client_payload": {
                 "image": "${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}",
+                "tag": "${{ steps.tag.outputs.TAG }}",
                 "commit": "${{ github.sha }}",
                 "ref": "${{ github.ref }}"
               }
