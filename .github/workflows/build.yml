@@ -33,6 +33,7 @@ jobs:
           cat key.json | docker login \
             --username json_key \
             --password-stdin cr.yandex
+
       - name: Determine tag
         id: tag
         run: |
@@ -49,3 +50,15 @@ jobs:
       - name: Push
         run: |
           docker push ${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}
+
+      - name: Trigger diploma-k8s workflow
+        if: success()
+        run: |
+          curl -X POST https://api.github.com/repos/Francotirado/diploma-k8s/dispatches -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.DIPLOMA_K8S_PAT }}" -d '{
+              "event_type": "image-pushed",
+              "client_payload": {
+                "image": "${{ env.REGISTRY }}:${{ steps.tag.outputs.TAG }}",
+                "commit": "${{ github.sha }}",
+                "ref": "${{ github.ref }}"
+              }
+            }'

@@ -9,3 +9,5 @@
 ├── README.md
 └── requirements.txt
 ```
+
+После отправки коммита в репозиторий, происходит сборка Docker образа и производится push в Registry
